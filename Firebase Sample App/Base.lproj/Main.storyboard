@@ -13,26 +13,21 @@
         <scene sceneID="jjw-5v-Vs9">
             <objects>
                 <tableViewController id="u1S-sV-mQh" customClass="FirebaseSampleAppTVC" customModule="Firebase_Sample_App" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="Ef1-tF-ojd">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="200" sectionHeaderHeight="28" sectionFooterHeight="28" id="Ef1-tF-ojd">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="iqi-Be-YuA">
-                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="iqi-Be-YuA" id="AtR-y7-chb">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="u1S-sV-mQh" id="wq3-2J-kI2"/>
                             <outlet property="delegate" destination="u1S-sV-mQh" id="Ehp-jF-bBl"/>
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="QCc-fv-cTh">
+                        <barButtonItem key="leftBarButtonItem" title="+" id="YGp-B0-Gsg">
+                            <connections>
+                                <action selector="addEvent:" destination="u1S-sV-mQh" id="gUc-9V-AZp"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Sign In" id="3f1-Ig-Zgb">
                             <connections>
                                 <action selector="signIn:" destination="u1S-sV-mQh" id="blj-Yl-58E"/>
@@ -41,11 +36,104 @@
                     </navigationItem>
                     <connections>
                         <outlet property="signInButton" destination="3f1-Ig-Zgb" id="kc9-Kb-IaU"/>
+                        <segue destination="UCF-iJ-yhV" kind="presentation" identifier="Add Event" id="eIJ-hh-8uF"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DeE-l2-GaV" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="893.60000000000002" y="133.5832083958021"/>
+            <point key="canvasLocation" x="935" y="134"/>
+        </scene>
+        <!--Add EventVC-->
+        <scene sceneID="Nmn-ey-sIc">
+            <objects>
+                <viewController id="UCF-iJ-yhV" customClass="AddEventVC" customModule="Firebase_Sample_App" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="kJh-Xf-log"/>
+                        <viewControllerLayoutGuide type="bottom" id="18p-Xc-Asx"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="NBt-Rw-1El">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="9SX-Ww-S0V">
+                                <rect key="frame" x="20" y="72" width="335" height="140.5"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="rAa-xI-uRc">
+                                        <rect key="frame" x="0.0" y="0.0" width="335" height="30"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QmJ-0i-F4Y">
+                                                <rect key="frame" x="0.0" y="0.0" width="167.5" height="30"/>
+                                                <state key="normal" title="Save"/>
+                                                <connections>
+                                                    <action selector="saveEvent:" destination="UCF-iJ-yhV" eventType="touchUpInside" id="fHP-h2-e34"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="86j-PB-PYP">
+                                                <rect key="frame" x="167.5" y="0.0" width="167.5" height="30"/>
+                                                <state key="normal" title="Cancel"/>
+                                                <connections>
+                                                    <action selector="cancelAddEvent:" destination="UCF-iJ-yhV" eventType="touchUpInside" id="oTB-nU-JOE"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="251" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Event Name" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="uRc-wj-BPs">
+                                        <rect key="frame" x="0.0" y="30" width="335" height="30"/>
+                                        <nil key="textColor"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="251" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Description" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="E0c-4L-2PE">
+                                        <rect key="frame" x="0.0" y="60" width="335" height="30"/>
+                                        <nil key="textColor"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="251" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Location" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="W0a-97-0lx">
+                                        <rect key="frame" x="0.0" y="90" width="335" height="30"/>
+                                        <nil key="textColor"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Start Date:" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VGe-Aw-byg">
+                                        <rect key="frame" x="0.0" y="120" width="335" height="20.5"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
+                            <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="date" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="rLF-kN-ApA">
+                                <rect key="frame" x="20" y="220.5" width="335" height="394.5"/>
+                                <date key="date" timeIntervalSinceReferenceDate="507182154.65351403">
+                                    <!--2017-01-27 03:55:54 +0000-->
+                                </date>
+                            </datePicker>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="rLF-kN-ApA" firstAttribute="top" secondItem="9SX-Ww-S0V" secondAttribute="bottom" constant="8" symbolic="YES" id="3Ju-Iy-uGL"/>
+                            <constraint firstItem="9SX-Ww-S0V" firstAttribute="leading" secondItem="NBt-Rw-1El" secondAttribute="leading" constant="20" symbolic="YES" id="5Nn-xL-bUW"/>
+                            <constraint firstItem="rLF-kN-ApA" firstAttribute="leading" secondItem="NBt-Rw-1El" secondAttribute="leading" constant="20" symbolic="YES" id="8Mg-qy-Lh8"/>
+                            <constraint firstItem="9SX-Ww-S0V" firstAttribute="top" secondItem="kJh-Xf-log" secondAttribute="bottom" constant="8" symbolic="YES" id="KWN-qI-yd3"/>
+                            <constraint firstItem="18p-Xc-Asx" firstAttribute="top" secondItem="rLF-kN-ApA" secondAttribute="bottom" priority="749" constant="8" symbolic="YES" id="LHu-M6-3Sq"/>
+                            <constraint firstAttribute="trailing" secondItem="rLF-kN-ApA" secondAttribute="trailing" constant="20" symbolic="YES" id="OwU-Lc-MQl"/>
+                            <constraint firstAttribute="trailing" secondItem="9SX-Ww-S0V" secondAttribute="trailing" constant="20" symbolic="YES" id="YRK-jG-E6d"/>
+                        </constraints>
+                    </view>
+                    <toolbarItems/>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="eventDescription" destination="E0c-4L-2PE" id="3J5-ZB-5IZ"/>
+                        <outlet property="eventLocation" destination="W0a-97-0lx" id="kyG-1K-Jwg"/>
+                        <outlet property="eventName" destination="uRc-wj-BPs" id="u4J-li-oI8"/>
+                        <outlet property="startDatePicker" destination="rLF-kN-ApA" id="xWT-3j-17P"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="e0y-OH-gbb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1778" y="96"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="fkW-US-uCY">

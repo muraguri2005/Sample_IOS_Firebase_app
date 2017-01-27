@@ -9,17 +9,29 @@
 import UIKit
 import FirebaseDatabase
 import FirebaseAuth
-
+struct EventFields {
+    static let NAME = "name"
+    static let START_DATE = "startdate"
+    static let DESCRIPTION = "description"
+    static let LOCATION = "location"
+    static let USERID = "userid"
+}
 class FirebaseSampleAppTVC: UITableViewController , UITextFieldDelegate{
     let tableViewCellIdentifier = "tableViewCell"
+    let ADD_EVENT_SEGUE = "Add Event";
     var ref:FIRDatabaseReference!
     var _refHandle : FIRDatabaseHandle!
     var events : [FIRDataSnapshot]! = [];
+    let dateFormatter = DateFormatter();
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: tableViewCellIdentifier)
+        let eventCellNib = UINib(nibName: "EventCell", bundle: nil)
+        self.tableView.register(eventCellNib, forCellReuseIdentifier: tableViewCellIdentifier)
+        self.tableView.estimatedRowHeight = self.tableView.rowHeight;
+        self.tableView.rowHeight = UITableViewAutomaticDimension;
         configureDatabase();
         configureSignButton();
+        dateFormatter.dateFormat = "yyyy-MM-dd hh:ss";
     }
     
     @IBOutlet weak var signInButton: UIBarButtonItem!
@@ -49,7 +61,12 @@ class FirebaseSampleAppTVC: UITableViewController , UITextFieldDelegate{
         present(signInVC, animated: true, completion: nil)
         }
     }
+    
+    
 
+    @IBAction func addEvent(_ sender: UIBarButtonItem) {
+        self.performSegue(withIdentifier: ADD_EVENT_SEGUE, sender: nil)
+    }
     func configureDatabase()  {
         self.ref = FIRDatabase.database().reference();
         self._refHandle = self.ref.child("events").queryOrdered(byChild: "startdate").observe(.childAdded, with: { [weak self] (snapshot) in
@@ -84,14 +101,24 @@ class FirebaseSampleAppTVC: UITableViewController , UITextFieldDelegate{
         return events.count;
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: tableViewCellIdentifier, for: indexPath);
+        let cell = tableView.dequeueReusableCell(withIdentifier: tableViewCellIdentifier, for: indexPath) as! EventCell;
         let eventSnapShot = self.events[indexPath.row];
-        let event = eventSnapShot.value as! Dictionary<String,AnyObject>;
-        cell.textLabel?.text = event["name"] as? String;
+        let event = Event(event: eventSnapShot.value as! Dictionary<String,AnyObject>);
+        cell.eventName?.text = event.name;
+        cell.eventLocation?.text = event.location;
+        let startDate = Date(timeIntervalSince1970: TimeInterval(event.startDate.doubleValue/1000))
+        
+        cell.eventStartDate.text = String(describing: dateFormatter.string(from: startDate))
+        cell.eventDescription?.text = event.eventDescription;
         return cell;
     }
     
-    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        //prepare for segue
+        if let addEventVC = segue.destination as? AddEventVC {
+            addEventVC.ref = ref;
+        }
+    }
     
 
 }
