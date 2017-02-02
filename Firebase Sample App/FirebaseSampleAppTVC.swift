@@ -9,12 +9,14 @@
 import UIKit
 import FirebaseDatabase
 import FirebaseAuth
+import FirebaseStorage
 struct EventFields {
     static let NAME = "name"
     static let START_DATE = "startdate"
     static let DESCRIPTION = "description"
     static let LOCATION = "location"
     static let USERID = "userid"
+    static let POSTER_PATH = "poster_path"
 }
 class FirebaseSampleAppTVC: UITableViewController , UITextFieldDelegate{
     let tableViewCellIdentifier = "tableViewCell"
@@ -110,6 +112,33 @@ class FirebaseSampleAppTVC: UITableViewController , UITextFieldDelegate{
         
         cell.eventStartDate.text = String(describing: dateFormatter.string(from: startDate))
         cell.eventDescription?.text = event.eventDescription;
+        
+        if let imageURL = event.posterPath {
+            if imageURL.hasPrefix("gs://") {
+                FIRStorage.storage().reference(forURL: imageURL).data(withMaxSize: INT64_MAX) { (data,error) in
+                    if let error = error {
+                        print("Error \(error.localizedDescription)")
+                        return
+                    }
+                    let image = UIImage(data: data!);
+                    let oldWidth = image!.size.width;
+                    let scaleFactor = self.tableView.bounds.size.width/oldWidth;
+                    let newHeight = image!.size.height * scaleFactor;
+                    let newWidth = oldWidth * scaleFactor;
+                    UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight));
+                    image?.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight));
+                    let newImage = UIGraphicsGetImageFromCurrentImageContext();
+                    UIGraphicsEndImageContext();
+                    cell.eventImage.image = newImage;
+                    
+                }
+            } else if let URL = URL(string:imageURL), let data = try? Data(contentsOf: URL){
+                cell.eventImage.image = UIImage(data: data);
+            }
+        } else {
+            cell.eventImage.image = nil;
+        }
+        
         return cell;
     }
     

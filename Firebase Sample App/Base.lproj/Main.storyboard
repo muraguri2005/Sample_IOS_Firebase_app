@@ -104,21 +104,31 @@
                                 </subviews>
                             </stackView>
                             <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="date" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="rLF-kN-ApA">
-                                <rect key="frame" x="20" y="220.5" width="335" height="394.5"/>
+                                <rect key="frame" x="20" y="220.5" width="335" height="216"/>
                                 <date key="date" timeIntervalSinceReferenceDate="507182154.65351403">
                                     <!--2017-01-27 03:55:54 +0000-->
                                 </date>
                             </datePicker>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Ep-bM-wpr">
+                                <rect key="frame" x="20" y="444.5" width="335" height="30"/>
+                                <state key="normal" title="📷Attach Event Poster"/>
+                                <connections>
+                                    <action selector="attachEventPoster:" destination="UCF-iJ-yhV" eventType="touchUpInside" id="bzI-x2-Xbz"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="18p-Xc-Asx" firstAttribute="top" secondItem="6Ep-bM-wpr" secondAttribute="bottom" priority="250" constant="8" symbolic="YES" id="1cf-kB-C39"/>
                             <constraint firstItem="rLF-kN-ApA" firstAttribute="top" secondItem="9SX-Ww-S0V" secondAttribute="bottom" constant="8" symbolic="YES" id="3Ju-Iy-uGL"/>
                             <constraint firstItem="9SX-Ww-S0V" firstAttribute="leading" secondItem="NBt-Rw-1El" secondAttribute="leading" constant="20" symbolic="YES" id="5Nn-xL-bUW"/>
                             <constraint firstItem="rLF-kN-ApA" firstAttribute="leading" secondItem="NBt-Rw-1El" secondAttribute="leading" constant="20" symbolic="YES" id="8Mg-qy-Lh8"/>
                             <constraint firstItem="9SX-Ww-S0V" firstAttribute="top" secondItem="kJh-Xf-log" secondAttribute="bottom" constant="8" symbolic="YES" id="KWN-qI-yd3"/>
-                            <constraint firstItem="18p-Xc-Asx" firstAttribute="top" secondItem="rLF-kN-ApA" secondAttribute="bottom" priority="749" constant="8" symbolic="YES" id="LHu-M6-3Sq"/>
                             <constraint firstAttribute="trailing" secondItem="rLF-kN-ApA" secondAttribute="trailing" constant="20" symbolic="YES" id="OwU-Lc-MQl"/>
+                            <constraint firstItem="6Ep-bM-wpr" firstAttribute="top" secondItem="rLF-kN-ApA" secondAttribute="bottom" constant="8" symbolic="YES" id="UCz-Cy-gcN"/>
                             <constraint firstAttribute="trailing" secondItem="9SX-Ww-S0V" secondAttribute="trailing" constant="20" symbolic="YES" id="YRK-jG-E6d"/>
+                            <constraint firstItem="6Ep-bM-wpr" firstAttribute="leading" secondItem="NBt-Rw-1El" secondAttribute="leading" constant="20" symbolic="YES" id="p3G-PH-8g9"/>
+                            <constraint firstAttribute="trailing" secondItem="6Ep-bM-wpr" secondAttribute="trailing" constant="20" symbolic="YES" id="uq1-fL-zgO"/>
                         </constraints>
                     </view>
                     <toolbarItems/>

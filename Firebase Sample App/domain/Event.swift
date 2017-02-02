@@ -13,11 +13,13 @@ class Event:NSObject {
     var name: String;
     var eventDescription: String;
     var location:String;
+    var posterPath:String?
     init(event:Dictionary<String,AnyObject>) {
         startDate = event[EventFields.START_DATE] as? NSNumber ?? NSNumber(value: 0)
         location = event[EventFields.LOCATION] as? String ?? ""
         name = event[EventFields.NAME] as? String ?? ""
         eventDescription = event[EventFields.DESCRIPTION] as? String ?? ""
+        posterPath =  event[EventFields.POSTER_PATH] as? String
         super.init();
     }
 }
