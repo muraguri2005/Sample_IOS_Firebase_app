@@ -1,15 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="H3P-nl-Meb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="isb-qQ-drS">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Firebase Sample AppTVC-->
+        <!--Split View Controller-->
+        <scene sceneID="C40-MM-ZG1">
+            <objects>
+                <splitViewController id="isb-qQ-drS" sceneMemberID="viewController">
+                    <connections>
+                        <segue destination="H3P-nl-Meb" kind="relationship" relationship="masterViewController" id="9ug-hp-Ub5"/>
+                        <segue destination="UCF-iJ-yhV" kind="relationship" relationship="detailViewController" id="YYz-8w-8Fr"/>
+                    </connections>
+                </splitViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vk9-LY-1ld" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-446" y="332"/>
+        </scene>
+        <!--Events-->
         <scene sceneID="jjw-5v-Vs9">
             <objects>
                 <tableViewController id="u1S-sV-mQh" customClass="FirebaseSampleAppTVC" customModule="Firebase_Sample_App" customModuleProvider="target" sceneMemberID="viewController">
@@ -22,7 +35,7 @@
                             <outlet property="delegate" destination="u1S-sV-mQh" id="Ehp-jF-bBl"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="QCc-fv-cTh">
+                    <navigationItem key="navigationItem" title="Events" id="QCc-fv-cTh">
                         <barButtonItem key="leftBarButtonItem" title="+" id="YGp-B0-Gsg">
                             <connections>
                                 <action selector="addEvent:" destination="u1S-sV-mQh" id="gUc-9V-AZp"/>
@@ -36,12 +49,12 @@
                     </navigationItem>
                     <connections>
                         <outlet property="signInButton" destination="3f1-Ig-Zgb" id="kc9-Kb-IaU"/>
-                        <segue destination="UCF-iJ-yhV" kind="presentation" identifier="Add Event" id="eIJ-hh-8uF"/>
+                        <segue destination="UCF-iJ-yhV" kind="showDetail" identifier="Add Event" id="eIJ-hh-8uF"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DeE-l2-GaV" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="935" y="134"/>
+            <point key="canvasLocation" x="1214" y="20"/>
         </scene>
         <!--Add EventVC-->
         <scene sceneID="Nmn-ey-sIc">
@@ -58,25 +71,13 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="9SX-Ww-S0V">
                                 <rect key="frame" x="20" y="72" width="335" height="140.5"/>
                                 <subviews>
-                                    <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="rAa-xI-uRc">
+                                    <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QmJ-0i-F4Y">
                                         <rect key="frame" x="0.0" y="0.0" width="335" height="30"/>
-                                        <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QmJ-0i-F4Y">
-                                                <rect key="frame" x="0.0" y="0.0" width="167.5" height="30"/>
-                                                <state key="normal" title="Save"/>
-                                                <connections>
-                                                    <action selector="saveEvent:" destination="UCF-iJ-yhV" eventType="touchUpInside" id="fHP-h2-e34"/>
-                                                </connections>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="86j-PB-PYP">
-                                                <rect key="frame" x="167.5" y="0.0" width="167.5" height="30"/>
-                                                <state key="normal" title="Cancel"/>
-                                                <connections>
-                                                    <action selector="cancelAddEvent:" destination="UCF-iJ-yhV" eventType="touchUpInside" id="oTB-nU-JOE"/>
-                                                </connections>
-                                            </button>
-                                        </subviews>
-                                    </stackView>
+                                        <state key="normal" title="Save"/>
+                                        <connections>
+                                            <action selector="saveEvent:" destination="UCF-iJ-yhV" eventType="touchUpInside" id="fHP-h2-e34"/>
+                                        </connections>
+                                    </button>
                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="251" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Event Name" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="uRc-wj-BPs">
                                         <rect key="frame" x="0.0" y="30" width="335" height="30"/>
                                         <nil key="textColor"/>
@@ -143,7 +144,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="e0y-OH-gbb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1778" y="96"/>
+            <point key="canvasLocation" x="815" y="904"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="fkW-US-uCY">
@@ -161,7 +162,10 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dGI-HN-Qtw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-45.600000000000001" y="133.5832083958021"/>
+            <point key="canvasLocation" x="340" y="43"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="eIJ-hh-8uF"/>
+    </inferredMetricsTieBreakers>
 </document>

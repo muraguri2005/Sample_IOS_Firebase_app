@@ -18,13 +18,12 @@ struct EventFields {
     static let USERID = "userid"
     static let POSTER_PATH = "poster_path"
 }
-class FirebaseSampleAppTVC: UITableViewController , UITextFieldDelegate{
+class FirebaseSampleAppTVC: UITableViewController , UITextFieldDelegate, UISplitViewControllerDelegate{
     let tableViewCellIdentifier = "tableViewCell"
     let ADD_EVENT_SEGUE = "Add Event";
     var ref:FIRDatabaseReference!
     var _refHandle : FIRDatabaseHandle!
     var events : [FIRDataSnapshot]! = [];
-    let dateFormatter = DateFormatter();
     override func viewDidLoad() {
         super.viewDidLoad()
         let eventCellNib = UINib(nibName: "EventCell", bundle: nil)
@@ -33,7 +32,8 @@ class FirebaseSampleAppTVC: UITableViewController , UITextFieldDelegate{
         self.tableView.rowHeight = UITableViewAutomaticDimension;
         configureDatabase();
         configureSignButton();
-        dateFormatter.dateFormat = "yyyy-MM-dd hh:ss";
+        self.splitViewController?.delegate = self
+        
     }
     
     @IBOutlet weak var signInButton: UIBarButtonItem!
@@ -106,39 +106,7 @@ class FirebaseSampleAppTVC: UITableViewController , UITextFieldDelegate{
         let cell = tableView.dequeueReusableCell(withIdentifier: tableViewCellIdentifier, for: indexPath) as! EventCell;
         let eventSnapShot = self.events[indexPath.row];
         let event = Event(event: eventSnapShot.value as! Dictionary<String,AnyObject>);
-        cell.eventName?.text = event.name;
-        cell.eventLocation?.text = event.location;
-        let startDate = Date(timeIntervalSince1970: TimeInterval(event.startDate.doubleValue/1000))
-        
-        cell.eventStartDate.text = String(describing: dateFormatter.string(from: startDate))
-        cell.eventDescription?.text = event.eventDescription;
-        
-        if let imageURL = event.posterPath {
-            if imageURL.hasPrefix("gs://") {
-                FIRStorage.storage().reference(forURL: imageURL).data(withMaxSize: INT64_MAX) { (data,error) in
-                    if let error = error {
-                        print("Error \(error.localizedDescription)")
-                        return
-                    }
-                    let image = UIImage(data: data!);
-                    let oldWidth = image!.size.width;
-                    let scaleFactor = self.tableView.bounds.size.width/oldWidth;
-                    let newHeight = image!.size.height * scaleFactor;
-                    let newWidth = oldWidth * scaleFactor;
-                    UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight));
-                    image?.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight));
-                    let newImage = UIGraphicsGetImageFromCurrentImageContext();
-                    UIGraphicsEndImageContext();
-                    cell.eventImage.image = newImage;
-                    
-                }
-            } else if let URL = URL(string:imageURL), let data = try? Data(contentsOf: URL){
-                cell.eventImage.image = UIImage(data: data);
-            }
-        } else {
-            cell.eventImage.image = nil;
-        }
-        
+        cell.event = event
         return cell;
     }
     
@@ -147,6 +115,15 @@ class FirebaseSampleAppTVC: UITableViewController , UITextFieldDelegate{
         if let addEventVC = segue.destination as? AddEventVC {
             addEventVC.ref = ref;
         }
+    }
+    
+    func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController: UIViewController, onto primaryViewController: UIViewController) -> Bool {
+        if let addEventVC = secondaryViewController as? AddEventVC {
+            if addEventVC.eventId  == nil {
+                return true;
+            }
+        }
+        return false
     }
     
 

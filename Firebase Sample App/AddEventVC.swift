@@ -21,24 +21,30 @@ class AddEventVC: UIViewController,UIImagePickerControllerDelegate,UINavigationC
     
     var storageRef: FIRStorageReference!
     
-    var data = Dictionary<String,AnyObject>();
+    var posterPath : String?
     var imageId = Int(Date.timeIntervalSinceReferenceDate*1000);
     var eventId : String?
+    var event : Event? {
+        didSet {
+            updateUI()
+        }
+    }
+    
+    private func updateUI() {
+        self.navigationItem.title = event?.name
+        eventDescription?.text = event?.eventDescription
+        eventName?.text = event?.name
+        eventLocation?.text = event?.location
+        if let time = event?.startDate.doubleValue {
+            startDatePicker?.date = Date(timeIntervalSince1970: time/1000)
+        }
+    }
     
     @IBAction func saveEvent(_ sender: UIButton) {
-        guard let currentUser = FIRAuth.auth()?.currentUser else {
-            let notLoggedInVC = UIAlertController(title:"Not Logged In",message:"Please Log in first",preferredStyle:.alert);
-            let close = UIAlertAction(title: "Close", style: .default, handler: nil)
-            notLoggedInVC.addAction(close);
-            self.present(notLoggedInVC, animated: true, completion: nil)
-            return;
-        }
-        saveEventToDB(uid: currentUser.uid);
+        saveEventToDB();
     }
     
-    @IBAction func cancelAddEvent(_ sender: UIButton) {
-        self.dismiss(animated: true, completion: nil)
-    }
+    
     @IBAction func attachEventPoster(_ sender: UIButton) {
         let imagePickerVC = UIImagePickerController();
         
@@ -55,26 +61,24 @@ class AddEventVC: UIViewController,UIImagePickerControllerDelegate,UINavigationC
             let asset = assets.firstObject;
             asset?.requestContentEditingInput(with: nil) { [weak self] (contentEditingInput, info) in
                 let imageFile = contentEditingInput?.fullSizeImageURL
-               
+                
                 guard let strongSelf = self  else {return}
-                 let filePath = "\(uid)/\(strongSelf.imageId)/\((referenceURL as AnyObject).lastPathComponent!)"
+                let filePath = "\(uid)/\(strongSelf.imageId)/\((referenceURL as AnyObject).lastPathComponent!)"
                 strongSelf.storageRef.child(filePath).putFile(imageFile!, metadata: nil) { (metadata, error) in
-                    if let nsError = error as? NSError {
+                    if let nsError = error as NSError? {
                         print("Error uploading: \(nsError.localizedDescription)")
                         return;
                     }
-                strongSelf.data[EventFields.POSTER_PATH]=strongSelf.storageRef.child((metadata?.path)!).description as AnyObject?;
-                    strongSelf.saveEventToDB(uid: uid);
-                                        
+                    strongSelf.posterPath=strongSelf.storageRef.child((metadata?.path)!).description;
+                    strongSelf.saveEventToDB();
+                    
                 }
             }
             
         }
-        print("Picked");
     }
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
-        print("cancelled");
     }
     
     
@@ -91,20 +95,46 @@ class AddEventVC: UIViewController,UIImagePickerControllerDelegate,UINavigationC
     func configureStorage(){
         storageRef = FIRStorage.storage().reference(forURL: "gs://sampleandroidappusingfir-a68b0.appspot.com");
     }
-    func saveEventToDB(uid:String){
-        data[EventFields.DESCRIPTION] = eventDescription.text as AnyObject?;
-        data[EventFields.NAME] = eventName.text as AnyObject?;
-        data[EventFields.LOCATION] = eventLocation.text as AnyObject?;
-        let time = startDatePicker.date.timeIntervalSince1970*1000;
-        data[EventFields.START_DATE] = time as AnyObject?;
-        data[EventFields.USERID] = uid as AnyObject?;
+    func saveEventToDB(){
+        guard let currentUser = FIRAuth.auth()?.currentUser,
+            let description = eventDescription.text, !description.isEmpty,
+            let name = eventName.text, !name.isEmpty,
+            let location = eventLocation.text, !location.isEmpty
+            else {
+                var message = "Invalid Data";
+                var title = "You must fill all the fields before saving";
+                if FIRAuth.auth()?.currentUser == nil {
+                    message = "Please Log in first";
+                    title = "Not Logged In";
+                }
+                showAlert(message, withTitle: title)
+                return
+        }
+        let data = [
+            EventFields.DESCRIPTION: description,
+            EventFields.NAME: name,
+            EventFields.LOCATION:location,
+            EventFields.START_DATE:startDatePicker.date.timeIntervalSince1970*1000,
+            EventFields.USERID:currentUser.uid,
+            EventFields.POSTER_PATH:posterPath ?? ""] as [String : Any];
         if eventId == nil {
             eventId = ref?.child("events").childByAutoId().key;
         }
-        ref.child("events").child(eventId!).setValue(data, withCompletionBlock: { (error, firDB) in
-            print(error ?? "event saved successfully")
-        });
+        ref.child("events").child(eventId!).setValue(data, withCompletionBlock: { [weak self] (error, firDB) in
+            if error == nil {
+                self?.event = Event(event:data as Dictionary<String, AnyObject>)
+                self?.showAlert("Event saved Successfully", withTitle: "Event Saved")
+            } else {
+                print(error ?? "")
+            }
+        })
         
+    }
+    func showAlert(_ message:String,withTitle title: String){
+        let alertVC = UIAlertController(title:title,message:message,preferredStyle:.alert);
+        let close = UIAlertAction(title: "Close", style: .default, handler: nil)
+        alertVC.addAction(close);
+        self.present(alertVC, animated: true, completion: nil)
     }
     
 }

@@ -8,18 +8,20 @@
 
 import Foundation
 import Firebase
-class Event:NSObject {
+struct Event {
     var startDate : NSNumber;
     var name: String;
     var eventDescription: String;
     var location:String;
     var posterPath:String?
+    var userId : String
     init(event:Dictionary<String,AnyObject>) {
         startDate = event[EventFields.START_DATE] as? NSNumber ?? NSNumber(value: 0)
         location = event[EventFields.LOCATION] as? String ?? ""
         name = event[EventFields.NAME] as? String ?? ""
         eventDescription = event[EventFields.DESCRIPTION] as? String ?? ""
         posterPath =  event[EventFields.POSTER_PATH] as? String
-        super.init();
+        userId = event[EventFields.USERID] as! String
     }
+    
 }
