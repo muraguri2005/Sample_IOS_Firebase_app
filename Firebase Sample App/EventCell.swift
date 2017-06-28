@@ -29,7 +29,7 @@ class EventCell: UITableViewCell {
             
             if let imageURL = event?.posterPath {
                 if imageURL.hasPrefix("gs://") {
-                    FIRStorage.storage().reference(forURL: imageURL).data(withMaxSize: INT64_MAX) {[weak self] (data,error) in
+                    Storage.storage().reference(forURL: imageURL).getData(maxSize: INT64_MAX) {[weak self] (data, error) in
                         if let error = error {
                             print("Error \(error.localizedDescription)")
                             return
@@ -47,7 +47,6 @@ class EventCell: UITableViewCell {
                         let newImage = UIGraphicsGetImageFromCurrentImageContext();
                         UIGraphicsEndImageContext();
                         self?.eventImage?.image = newImage;
-                        
                     }
                 } else if let URL = URL(string:imageURL), let data = try? Data(contentsOf: URL){
                     eventImage?.image = UIImage(data: data);

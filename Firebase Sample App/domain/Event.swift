@@ -23,5 +23,12 @@ struct Event {
         posterPath =  event[EventFields.POSTER_PATH] as? String
         userId = event[EventFields.USERID] as! String
     }
+    init(name:String,description:String,userId:String,location:String,startDate:NSNumber) {
+        self.name = name
+        self.eventDescription = description
+        self.location = location
+        self.startDate = startDate
+        self.userId = userId;
+    }
     
 }

@@ -18,16 +18,14 @@ struct EventFields {
     static let USERID = "userid"
     static let POSTER_PATH = "poster_path"
 }
-class FirebaseSampleAppTVC: UITableViewController , UITextFieldDelegate, UISplitViewControllerDelegate{
-    let tableViewCellIdentifier = "tableViewCell"
+class FirebaseSampleAppTVC: UITableViewController , UITextFieldDelegate, UISplitViewControllerDelegate, UIPopoverPresentationControllerDelegate{
+    let tableViewCellIdentifier = "Event Cell"
     let ADD_EVENT_SEGUE = "Add Event";
-    var ref:FIRDatabaseReference!
-    var _refHandle : FIRDatabaseHandle!
-    var events : [FIRDataSnapshot]! = [];
+    var ref:DatabaseReference!
+    var _refHandle : DatabaseHandle!
+    var events : [DataSnapshot]! = [];
     override func viewDidLoad() {
         super.viewDidLoad()
-        let eventCellNib = UINib(nibName: "EventCell", bundle: nil)
-        self.tableView.register(eventCellNib, forCellReuseIdentifier: tableViewCellIdentifier)
         self.tableView.estimatedRowHeight = self.tableView.rowHeight;
         self.tableView.rowHeight = UITableViewAutomaticDimension;
         configureDatabase();
@@ -38,9 +36,9 @@ class FirebaseSampleAppTVC: UITableViewController , UITextFieldDelegate, UISplit
     
     @IBOutlet weak var signInButton: UIBarButtonItem!
     @IBAction func signIn(_ sender: UIBarButtonItem) {
-        if let _ = FIRAuth.auth()?.currentUser {
+        if let _ = Auth.auth().currentUser {
             do {
-                try FIRAuth.auth()?.signOut();
+                try Auth.auth().signOut();
                 configureSignButton();
             }catch {
                 
@@ -70,7 +68,7 @@ class FirebaseSampleAppTVC: UITableViewController , UITextFieldDelegate, UISplit
         self.performSegue(withIdentifier: ADD_EVENT_SEGUE, sender: nil)
     }
     func configureDatabase()  {
-        self.ref = FIRDatabase.database().reference();
+        self.ref = Database.database().reference();
         self._refHandle = self.ref.child("events").queryOrdered(byChild: "startdate").observe(.childAdded, with: { [weak self] (snapshot) in
             guard let strongSelf = self else {return}
             strongSelf.events.append(snapshot);
@@ -78,14 +76,14 @@ class FirebaseSampleAppTVC: UITableViewController , UITextFieldDelegate, UISplit
         })
     }
     func configureSignButton(){
-        if let _ = FIRAuth.auth()?.currentUser {
+        if let _ = Auth.auth().currentUser {
             signInButton.title = "Sign Out";
         } else {
             signInButton.title = "Sign In";
         }
     }
     func signInUser(email:String,password:String) {
-        FIRAuth.auth()?.signIn(withEmail: email, password: password) {[weak self] (user, error) in
+        Auth.auth().signIn(withEmail: email, password: password) {[weak self] (user, error) in
             print(error ?? "no error");
             if error == nil {
                 guard let strongSelf = self else {return}
@@ -112,18 +110,47 @@ class FirebaseSampleAppTVC: UITableViewController , UITextFieldDelegate, UISplit
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         //prepare for segue
-        if let addEventVC = segue.destination as? AddEventVC {
+        var destinationViewController = segue.destination
+        if let navigationController = destinationViewController as? UINavigationController {
+            destinationViewController = navigationController.visibleViewController ?? destinationViewController
+        }
+        if let addEventVC = destinationViewController as? AddEventVC {
             addEventVC.ref = ref;
+        } else if let eventVC = destinationViewController as? EventVC {
+            eventVC.event = Event(event: self.events[(tableView.indexPathForSelectedRow?.row)!].value as! Dictionary<String,AnyObject>);
+            eventVC.navigationController?.popoverPresentationController?.delegate = self
         }
     }
     
     func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController: UIViewController, onto primaryViewController: UIViewController) -> Bool {
-        if let addEventVC = secondaryViewController as? AddEventVC {
-            if addEventVC.eventId  == nil {
+        var destinationViewController = secondaryViewController
+        if let navigationController = destinationViewController as? UINavigationController {
+            destinationViewController = navigationController.visibleViewController ?? destinationViewController
+        }
+        if let eventVC = destinationViewController as? EventVC {
+            if  eventVC.event == nil {
                 return true;
             }
         }
         return false
+    }
+    
+    func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
+        if traitCollection.verticalSizeClass == .compact {
+            return .none
+        } else if traitCollection.horizontalSizeClass == .compact {
+            return .overFullScreen
+        } else {
+            return .none
+        }
+    }
+    @IBAction func reloadEvents(from segue: UIStoryboardSegue) {
+        if let addEventVC = segue.source as? AddEventVC {
+            let event = addEventVC.updatedEvent
+            //TODO: save event
+            print("Event  %@", event )
+            tableView.reloadData()
+        }
     }
     
 

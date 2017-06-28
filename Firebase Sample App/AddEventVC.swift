@@ -12,14 +12,14 @@ import FirebaseAuth
 import Photos
 import FirebaseStorage
 class AddEventVC: UIViewController,UIImagePickerControllerDelegate,UINavigationControllerDelegate {
-    var ref:FIRDatabaseReference!
+    var ref:DatabaseReference!
     
     @IBOutlet weak var eventDescription: UITextField!
     @IBOutlet weak var eventName: UITextField!
     @IBOutlet weak var eventLocation: UITextField!
     @IBOutlet weak var startDatePicker: UIDatePicker!
     
-    var storageRef: FIRStorageReference!
+    var storageRef: StorageReference!
     
     var posterPath : String?
     var imageId = Int(Date.timeIntervalSinceReferenceDate*1000);
@@ -28,8 +28,13 @@ class AddEventVC: UIViewController,UIImagePickerControllerDelegate,UINavigationC
         didSet {
             updateUI()
         }
+        
     }
     
+    
+    var updatedEvent : Event {
+        return Event(name: eventName.text ?? "no name", description: eventDescription.text ?? "no description", userId: Auth.auth().currentUser?.uid ?? "no uid", location: eventLocation.text ?? "no location", startDate: NSNumber(value:startDatePicker.date.timeIntervalSince1970*1000))
+    }
     private func updateUI() {
         self.navigationItem.title = event?.name
         eventDescription?.text = event?.eventDescription
@@ -40,10 +45,10 @@ class AddEventVC: UIViewController,UIImagePickerControllerDelegate,UINavigationC
         }
     }
     
-    @IBAction func saveEvent(_ sender: UIButton) {
+    
+    @IBAction func saveEvent(_ sender: UIBarButtonItem) {
         saveEventToDB();
     }
-    
     
     @IBAction func attachEventPoster(_ sender: UIButton) {
         let imagePickerVC = UIImagePickerController();
@@ -55,7 +60,7 @@ class AddEventVC: UIViewController,UIImagePickerControllerDelegate,UINavigationC
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         picker.dismiss(animated: true, completion: nil)
-        guard let uid = FIRAuth.auth()?.currentUser?.uid else {return}
+        guard let uid = Auth.auth().currentUser?.uid else {return}
         if let referenceURL = info[UIImagePickerControllerReferenceURL] {
             let assets = PHAsset.fetchAssets(withALAssetURLs: [referenceURL as! URL], options: nil)
             let asset = assets.firstObject;
@@ -64,7 +69,7 @@ class AddEventVC: UIViewController,UIImagePickerControllerDelegate,UINavigationC
                 
                 guard let strongSelf = self  else {return}
                 let filePath = "\(uid)/\(strongSelf.imageId)/\((referenceURL as AnyObject).lastPathComponent!)"
-                strongSelf.storageRef.child(filePath).putFile(imageFile!, metadata: nil) { (metadata, error) in
+                strongSelf.storageRef.child(filePath).putFile(from: imageFile!, metadata: nil) { (metadata, error) in
                     if let nsError = error as NSError? {
                         print("Error uploading: \(nsError.localizedDescription)")
                         return;
@@ -93,17 +98,17 @@ class AddEventVC: UIViewController,UIImagePickerControllerDelegate,UINavigationC
         super.didReceiveMemoryWarning()
     }
     func configureStorage(){
-        storageRef = FIRStorage.storage().reference(forURL: "gs://sampleandroidappusingfir-a68b0.appspot.com");
+        storageRef = Storage.storage().reference(forURL: "gs://sampleandroidappusingfir-a68b0.appspot.com");
     }
     func saveEventToDB(){
-        guard let currentUser = FIRAuth.auth()?.currentUser,
+        guard let currentUser = Auth.auth().currentUser,
             let description = eventDescription.text, !description.isEmpty,
             let name = eventName.text, !name.isEmpty,
             let location = eventLocation.text, !location.isEmpty
             else {
                 var message = "Invalid Data";
                 var title = "You must fill all the fields before saving";
-                if FIRAuth.auth()?.currentUser == nil {
+                if Auth.auth().currentUser == nil {
                     message = "Please Log in first";
                     title = "Not Logged In";
                 }
@@ -124,6 +129,7 @@ class AddEventVC: UIViewController,UIImagePickerControllerDelegate,UINavigationC
             if error == nil {
                 self?.event = Event(event:data as Dictionary<String, AnyObject>)
                 self?.showAlert("Event saved Successfully", withTitle: "Event Saved")
+                self?.presentingViewController?.dismiss(animated: true, completion: nil)
             } else {
                 print(error ?? "")
             }
@@ -135,6 +141,17 @@ class AddEventVC: UIViewController,UIImagePickerControllerDelegate,UINavigationC
         let close = UIAlertAction(title: "Close", style: .default, handler: nil)
         alertVC.addAction(close);
         self.present(alertVC, animated: true, completion: nil)
+    }
+    @IBAction func cancel(_ sender: UIBarButtonItem) {
+        self.presentingViewController?.dismiss(animated: true, completion: nil)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        if let popoverPresentationController = navigationController?.popoverPresentationController{
+            if popoverPresentationController.arrowDirection != .unknown {
+                navigationItem.rightBarButtonItem = nil
+            }
+        }
     }
     
 }
