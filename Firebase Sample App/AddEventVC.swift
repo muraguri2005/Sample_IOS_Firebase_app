@@ -58,10 +58,13 @@ class AddEventVC: UIViewController,UIImagePickerControllerDelegate,UINavigationC
         present(imagePickerVC, animated: true, completion: nil)
     }
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+// Local variable inserted by Swift 4.2 migrator.
+let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+
         picker.dismiss(animated: true, completion: nil)
         guard let uid = Auth.auth().currentUser?.uid else {return}
-        if let referenceURL = info[UIImagePickerControllerReferenceURL] {
+        if let referenceURL = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.referenceURL)] {
             let assets = PHAsset.fetchAssets(withALAssetURLs: [referenceURL as! URL], options: nil)
             let asset = assets.firstObject;
             asset?.requestContentEditingInput(with: nil) { [weak self] (contentEditingInput, info) in
@@ -155,4 +158,14 @@ class AddEventVC: UIViewController,UIImagePickerControllerDelegate,UINavigationC
         }
     }
     
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
+	return input.rawValue
 }

@@ -27,7 +27,7 @@ class FirebaseSampleAppTVC: UITableViewController , UITextFieldDelegate, UISplit
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.estimatedRowHeight = self.tableView.rowHeight;
-        self.tableView.rowHeight = UITableViewAutomaticDimension;
+        self.tableView.rowHeight = UITableView.automaticDimension;
         configureDatabase();
         configureSignButton();
         self.splitViewController?.delegate = self
