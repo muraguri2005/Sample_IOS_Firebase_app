@@ -7,7 +7,6 @@
 //
 
 import XCTest
-@testable import Firebase_Sample_App
 
 class Firebase_Sample_AppTests: XCTestCase {
     

@@ -29,24 +29,30 @@ class EventCell: UITableViewCell {
             
             if let imageURL = event?.posterPath {
                 if imageURL.hasPrefix("gs://") {
-                    Storage.storage().reference(forURL: imageURL).getData(maxSize: INT64_MAX) {[weak self] (data, error) in
-                        if let error = error {
-                            print("Error \(error.localizedDescription)")
-                            return
+                    let concurrentQueue = DispatchQueue(label: "queuename")
+                    concurrentQueue.async {
+                        Storage.storage().reference(forURL: imageURL).getData(maxSize: INT64_MAX) {[weak self] (data, error) in
+                            if let error = error {
+                                print("Error \(error.localizedDescription)")
+                                return
+                            }
+                            let image = UIImage(data: data!);
+                            let oldWidth = image!.size.width;
+                            var scaleFactor: CGFloat = 1
+                            if let thisWidth = self?.bounds.size.width {
+                                scaleFactor = thisWidth/oldWidth;
+                            }
+                            let newHeight = image!.size.height * scaleFactor;
+                            let newWidth = oldWidth * scaleFactor;
+                            UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight));
+                            image?.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight));
+                            let newImage = UIGraphicsGetImageFromCurrentImageContext();
+                            UIGraphicsEndImageContext();
+                            
+                            DispatchQueue.main.async {
+                                self?.eventImage?.image = newImage;
+                            }
                         }
-                        let image = UIImage(data: data!);
-                        let oldWidth = image!.size.width;
-                        var scaleFactor: CGFloat = 1
-                        if let thisWidth = self?.bounds.size.width {
-                            scaleFactor = thisWidth/oldWidth;
-                        }
-                        let newHeight = image!.size.height * scaleFactor;
-                        let newWidth = oldWidth * scaleFactor;
-                        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight));
-                        image?.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight));
-                        let newImage = UIGraphicsGetImageFromCurrentImageContext();
-                        UIGraphicsEndImageContext();
-                        self?.eventImage?.image = newImage;
                     }
                 } else if let URL = URL(string:imageURL), let data = try? Data(contentsOf: URL){
                     eventImage?.image = UIImage(data: data);

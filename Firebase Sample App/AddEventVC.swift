@@ -75,8 +75,9 @@ class AddEventVC: UIViewController,UIImagePickerControllerDelegate,UINavigationC
                         return;
                     }
                     strongSelf.posterPath=strongSelf.storageRef.child((metadata?.path)!).description;
-                    strongSelf.saveEventToDB();
-                    
+                    if strongSelf.eventId != nil {
+                        strongSelf.saveEventToDB();
+                    }
                 }
             }
             
