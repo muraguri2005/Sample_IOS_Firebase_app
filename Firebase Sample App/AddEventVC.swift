@@ -64,7 +64,7 @@ let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
 
         picker.dismiss(animated: true, completion: nil)
         guard let uid = Auth.auth().currentUser?.uid else {return}
-        if let referenceURL = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.referenceURL)] {
+        if let referenceURL = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.phAsset)] {
             let assets = PHAsset.fetchAssets(withALAssetURLs: [referenceURL as! URL], options: nil)
             let asset = assets.firstObject;
             asset?.requestContentEditingInput(with: nil) { [weak self] (contentEditingInput, info) in
